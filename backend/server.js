@@ -10,10 +10,16 @@ import { v2 as cloudinary } from "cloudinary";
 import { app, server } from "./socket/socket.js";
 import job from "./cron/cron.js";
 
+import cors from "cors";
+app.use(cors({ origin: "https://whispersync-frontend.onrender.com", credentials: true }));
+
+
 dotenv.config();
 
 connectDB();
 job.start();
+
+
 
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
