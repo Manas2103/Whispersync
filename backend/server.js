@@ -9,17 +9,15 @@ import messageRoutes from "./routes/messageRoutes.js";
 import { v2 as cloudinary } from "cloudinary";
 import { app, server } from "./socket/socket.js";
 import job from "./cron/cron.js";
-
 import cors from "cors";
-app.use(cors({ origin: "https://whispersync-frontend.onrender.com", credentials: true }));
-
 
 dotenv.config();
 
+// Middleware to handle CORS
+app.use(cors({ origin: "https://whispersync-frontend.onrender.com", credentials: true }));
+
 connectDB();
 job.start();
-
-
 
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
@@ -40,16 +38,22 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/messages", messageRoutes);
 
-// http://localhost:5000 => backend,frontend
-console.log(path.join(__dirname, "frontend", "dist"));
-
+// Logging the static file path
+const staticPath = path.join(__dirname, "frontend", "dist");
+console.log("Static file path:", staticPath);
 
 if (process.env.NODE_ENV === "production") {
-	app.use(express.static(path.join(__dirname, "/frontend/dist")));
+	// Serve static files from the frontend dist directory
+	app.use(express.static(staticPath));
 
-	// react app
+	// Handle all other requests and send the index.html file
 	app.get("*", (req, res) => {
-		res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+		res.sendFile(path.resolve(staticPath, "index.html"), (err) => {
+			if (err) {
+				console.error("Error sending index.html:", err);
+				res.status(err.status).end();
+			}
+		});
 	});
 }
 
