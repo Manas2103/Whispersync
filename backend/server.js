@@ -41,6 +41,8 @@ app.use("/api/posts", postRoutes);
 app.use("/api/messages", messageRoutes);
 
 // http://localhost:5000 => backend,frontend
+console.log(path.join(__dirname, "frontend", "dist"));
+
 
 if (process.env.NODE_ENV === "production") {
 	app.use(express.static(path.join(__dirname, "/frontend/dist")));
